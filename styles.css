@@ -1,0 +1,571 @@
+/* ==========================================================================
+   TERRAFLOW ECO-INDUSTRIAL STYLING WITH FAN & ULTRASONIC MISTING ENHANCEMENTS
+   ========================================================================== */
+
+:root {
+  --bg-dark: #091712;
+  --bg-card: rgba(13, 38, 28, 0.75);
+  --bg-card-brown: rgba(36, 20, 14, 0.75);
+  --border-green: rgba(34, 197, 94, 0.2);
+  --border-amber: rgba(245, 158, 11, 0.2);
+  --border-purple: rgba(168, 85, 247, 0.2);
+  --border-cyan: rgba(6, 182, 212, 0.2);
+
+  --text-main: #f1f5f9;
+  --text-muted: #94a3b8;
+
+  --accent-green: #10b981;
+  --accent-amber: #f59e0b;
+  --accent-blue: #3b82f6;
+  --accent-cyan: #06b6d4;
+  --accent-purple: #a855f7;
+  --accent-red: #ef4444;
+}
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  background-color: var(--bg-dark);
+  color: var(--text-main);
+  min-height: 100vh;
+  overflow-x: hidden;
+}
+
+/* Background Ambient Glows */
+.ambient-glow {
+  position: fixed;
+  width: 600px;
+  height: 600px;
+  border-radius: 50%;
+  filter: blur(140px);
+  pointer-events: none;
+  z-index: 0;
+}
+.glow-green {
+  top: -150px;
+  left: -150px;
+  background: radial-gradient(circle, rgba(16, 185, 129, 0.15), transparent 70%);
+}
+.glow-brown {
+  bottom: -200px;
+  right: -200px;
+  background: radial-gradient(circle, rgba(168, 85, 247, 0.12), transparent 70%);
+}
+
+.app-container {
+  position: relative;
+  z-index: 1;
+  max-width: 1440px;
+  margin: 0 auto;
+  padding: 20px 24px;
+}
+
+/* Header Styling */
+.app-header {
+  margin-bottom: 24px;
+}
+.header-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+.brand {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+.brand-icon-wrapper {
+  width: 54px;
+  height: 54px;
+  border-radius: 16px;
+  background: linear-gradient(135deg, rgba(16, 185, 129, 0.2), rgba(168, 85, 247, 0.2));
+  border: 1px solid var(--border-green);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--accent-green);
+}
+.brand-tag {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 11px;
+  letter-spacing: 1.5px;
+  color: var(--accent-green);
+  font-weight: 600;
+  margin-bottom: 2px;
+}
+.brand h1 {
+  font-family: 'Outfit', sans-serif;
+  font-size: 26px;
+  font-weight: 700;
+  color: #ffffff;
+}
+.subtitle {
+  font-size: 13px;
+  color: var(--text-muted);
+}
+
+.badge-live-status {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 12px;
+  padding: 8px 14px;
+  background: rgba(16, 185, 129, 0.1);
+  border: 1px solid rgba(16, 185, 129, 0.3);
+  border-radius: 30px;
+  color: var(--accent-green);
+  font-weight: 600;
+}
+.pulse-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--accent-green);
+  box-shadow: 0 0 10px var(--accent-green);
+  animation: pulse 1.8s infinite;
+}
+
+@keyframes pulse {
+  0% { opacity: 1; transform: scale(1); }
+  50% { opacity: 0.4; transform: scale(1.3); }
+  100% { opacity: 1; transform: scale(1); }
+}
+
+/* Layout Grid */
+.simulator-layout {
+  display: grid;
+  grid-template-columns: 460px 1fr;
+  gap: 24px;
+}
+
+/* Glassmorphic Cards */
+.card {
+  background: var(--bg-card);
+  backdrop-filter: blur(16px);
+  border-radius: 20px;
+  border: 1px solid var(--border-green);
+  padding: 24px;
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4);
+}
+.glass-card-brown {
+  background: var(--bg-card-brown);
+  border-color: var(--border-amber);
+}
+
+.card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+  padding-bottom: 12px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+}
+.header-title-box {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.header-title-box h2, .header-title-box h3 {
+  font-family: 'Outfit', sans-serif;
+  font-size: 18px;
+  font-weight: 600;
+  color: #ffffff;
+}
+
+/* LED Grid (6 LEDs) */
+.status-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 10px;
+  margin-bottom: 20px;
+}
+.status-grid.six-leds {
+  grid-template-columns: repeat(3, 1fr);
+}
+.status-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  background: rgba(0, 0, 0, 0.25);
+  padding: 10px 4px;
+  border-radius: 12px;
+  border: 1px solid rgba(255, 255, 255, 0.05);
+}
+.led-ring {
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 6px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+.led {
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  background: #334155;
+  transition: all 0.3s ease;
+}
+.led-power.on { background: #10b981; box-shadow: 0 0 12px #10b981; }
+.led-dry.on { background: #f59e0b; box-shadow: 0 0 12px #f59e0b; }
+.led-pump.on { background: #3b82f6; box-shadow: 0 0 12px #3b82f6; }
+.led-fan.on { background: #06b6d4; box-shadow: 0 0 12px #06b6d4; }
+.led-mist.on { background: #a855f7; box-shadow: 0 0 12px #a855f7; }
+.led-fault.on { background: #ef4444; box-shadow: 0 0 12px #ef4444; }
+
+.led-label {
+  font-size: 10px;
+  font-weight: 600;
+  color: var(--text-main);
+  margin-bottom: 2px;
+}
+.led-sub {
+  font-size: 8px;
+  color: var(--text-muted);
+}
+
+/* Dual / Triple Meters Wrapper */
+.dual-meters-wrapper {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  margin-bottom: 20px;
+}
+
+/* Analog Meter Gauge Styling */
+.gauge-container {
+  background: rgba(0, 0, 0, 0.35);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 16px;
+  padding: 14px;
+}
+.gauge-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--text-muted);
+  margin-bottom: 8px;
+}
+.gauge-badge {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 10px;
+  padding: 2px 8px;
+  background: rgba(16, 185, 129, 0.15);
+  color: var(--accent-green);
+  border-radius: 10px;
+}
+
+.analog-gauge-wrap {
+  position: relative;
+  width: 200px;
+  height: 110px;
+  margin: 0 auto;
+}
+.gauge-svg {
+  width: 100%;
+  height: 100%;
+}
+.gauge-needle-hub {
+  position: absolute;
+  bottom: 10px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 16px;
+  height: 16px;
+}
+.gauge-needle {
+  position: absolute;
+  bottom: 8px;
+  left: 7px;
+  width: 3px;
+  height: 68px;
+  background: linear-gradient(to top, #ef4444, #f59e0b);
+  border-radius: 3px;
+  transform-origin: bottom center;
+  transition: transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+  box-shadow: 0 0 8px rgba(245, 158, 11, 0.6);
+}
+.gauge-needle.needle-purple {
+  background: linear-gradient(to top, #a855f7, #38bdf8);
+  box-shadow: 0 0 8px rgba(168, 85, 247, 0.6);
+}
+.gauge-needle.needle-red {
+  background: linear-gradient(to top, #ef4444, #f97316);
+  box-shadow: 0 0 8px rgba(239, 68, 68, 0.6);
+}
+.hub-cap {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 16px;
+  height: 16px;
+  background: #475569;
+  border: 2px solid #cbd5e1;
+  border-radius: 50%;
+}
+
+.gauge-ticks {
+  display: flex;
+  justify-content: space-between;
+  font-size: 10px;
+  font-weight: 600;
+  margin-top: 4px;
+}
+.tick-wet { color: #10b981; }
+.tick-moist { color: #f59e0b; }
+.tick-dry { color: #ef4444; }
+.tick-purple { color: #a855f7; }
+
+.gauge-value-display {
+  display: flex;
+  justify-content: space-around;
+  margin-top: 10px;
+  background: rgba(0, 0, 0, 0.3);
+  padding: 6px;
+  border-radius: 10px;
+}
+.gauge-val-box {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+.gauge-val-box .lbl {
+  font-size: 9px;
+  color: var(--text-muted);
+}
+.gauge-val-box strong {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 13px;
+}
+.val-green { color: var(--accent-green); }
+.val-amber { color: var(--accent-amber); }
+.val-purple { color: var(--accent-purple); }
+.val-red { color: var(--accent-red); }
+.val-gold { color: #fbbf24; }
+
+/* Switches Section */
+.switches-section {
+  margin-top: 16px;
+}
+.switches-title {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--text-muted);
+  margin-bottom: 12px;
+}
+.control-group label {
+  font-size: 11px;
+  color: var(--text-muted);
+  display: block;
+  margin-bottom: 6px;
+}
+.mode-toggle {
+  display: flex;
+  background: rgba(0, 0, 0, 0.4);
+  padding: 4px;
+  border-radius: 12px;
+  gap: 4px;
+}
+.mode-btn {
+  flex: 1;
+  padding: 8px;
+  border: none;
+  background: transparent;
+  color: var(--text-muted);
+  font-family: 'Outfit', sans-serif;
+  font-size: 12px;
+  font-weight: 600;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+.mode-btn.active {
+  background: var(--accent-green);
+  color: #000000;
+  box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);
+}
+
+.toggle-list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-top: 12px;
+}
+.toggle-card {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  background: rgba(0, 0, 0, 0.2);
+  padding: 10px;
+  border-radius: 12px;
+  border: 1px solid rgba(255, 255, 255, 0.04);
+}
+.toggle-info {
+  display: flex;
+  flex-direction: column;
+}
+.toggle-title {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--text-main);
+}
+.toggle-sub {
+  font-size: 10px;
+  color: var(--text-muted);
+}
+
+/* Switch Toggle Slider */
+.switch-label {
+  position: relative;
+  display: inline-block;
+  width: 44px;
+  height: 24px;
+}
+.switch-label input {
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+.slider {
+  position: absolute;
+  cursor: pointer;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background-color: #334155;
+  transition: .3s;
+  border-radius: 24px;
+}
+.slider:before {
+  position: absolute;
+  content: "";
+  height: 18px;
+  width: 18px;
+  left: 3px;
+  bottom: 3px;
+  background-color: white;
+  transition: .3s;
+  border-radius: 50%;
+}
+input:checked + .slider {
+  background-color: var(--accent-green);
+}
+input:checked + .slider:before {
+  transform: translateX(20px);
+}
+
+/* Grid Sliders (3 Columns) */
+.env-sliders.grid-3col {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+}
+.control-card {
+  background: rgba(0, 0, 0, 0.25);
+  padding: 12px;
+  border-radius: 14px;
+  border: 1px solid rgba(255, 255, 255, 0.05);
+}
+.control-card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 8px;
+  font-size: 11px;
+}
+.state-tag {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 10px;
+  padding: 3px 8px;
+  border-radius: 8px;
+  font-weight: 600;
+}
+.state-tag.wet { background: rgba(16, 185, 129, 0.2); color: var(--accent-green); }
+.state-tag.dry { background: rgba(239, 68, 68, 0.2); color: var(--accent-red); }
+.state-tag.mist { background: rgba(168, 85, 247, 0.2); color: var(--accent-purple); }
+.state-tag.temp-hot { background: rgba(239, 68, 68, 0.2); color: var(--accent-red); }
+
+.custom-slider {
+  width: 100%;
+  height: 6px;
+  border-radius: 4px;
+  outline: none;
+  background: #334155;
+}
+.eco-slider-green { accent-color: var(--accent-green); }
+.eco-slider-purple { accent-color: var(--accent-purple); }
+.eco-slider-red { accent-color: var(--accent-red); }
+.eco-slider-gold { accent-color: var(--accent-amber); }
+
+.slider-ticks {
+  display: flex;
+  justify-content: space-between;
+  font-size: 9px;
+  color: var(--text-muted);
+  margin-top: 4px;
+}
+
+/* Oscilloscope Canvas Section */
+.waveform-section {
+  margin-top: 16px;
+  background: rgba(0, 0, 0, 0.4);
+  border-radius: 16px;
+  padding: 14px;
+  border: 1px solid rgba(255, 255, 255, 0.06);
+}
+.waveform-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 12px;
+}
+.waveform-legend {
+  display: flex;
+  gap: 10px;
+  font-size: 10px;
+  font-family: 'JetBrains Mono', monospace;
+}
+.leg-item {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+.leg-item::before {
+  content: "";
+  display: inline-block;
+  width: 10px;
+  height: 3px;
+  border-radius: 2px;
+}
+.leg-sensor::before { background: #34d399; }
+.leg-comp::before { background: #fbbf24; }
+.leg-timer::before { background: #ea580c; }
+.leg-mosfet::before { background: #3b82f6; }
+.leg-fan::before { background: #06b6d4; }
+.leg-mist::before { background: #a855f7; }
+
+canvas#waveform-canvas {
+  width: 100%;
+  height: 220px;
+  background: #050d0a;
+  border-radius: 10px;
+  border: 1px solid rgba(16, 185, 129, 0.15);
+}
+
+/* Footer */
+.app-footer {
+  text-align: center;
+  margin-top: 30px;
+  font-size: 11px;
+  color: var(--text-muted);
+}
