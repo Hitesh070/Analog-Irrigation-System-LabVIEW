@@ -73,15 +73,18 @@ $$G_{pump}(s) = \frac{0.05}{5.0 \times 10^{-9} s^2 + 4.005 \times 10^{-5} s + 0.
 ├── index.html                                    # Main web dashboard interface (HTML5)
 ├── styles.css                                    # Glassmorphic eco-industrial CSS stylesheet
 ├── app.js                                        # Real-time Web simulation engine & canvas oscilloscope
-├── create_irrigation_simulink_model.m            # MATLAB script to programmatically build Simulink .slx model
-├── simulate_irrigation_controller.m              # Standalone toolbox-free MATLAB simulation script
-├── Analog_Irrigation_Control_System.slx          # Programmatically generated Simulink block model
-├── Analog_Irrigation_Controller_BOM_and_Component_List.xlsx # Master Excel workbook (BOM, Pin Netlists, Parameters)
-├── Analog_Irrigation_Controller_Master_Guide.docx# Master Word technical documentation document
+├── README.md                                     # Main repository documentation
 ├── PROJECT_HARDWARE_AND_SIMULINK_MASTER_GUIDE.md # Comprehensive engineering specification manual
 ├── HOW_TO_RUN_SIMULINK_MODEL.md                 # User guide for running MATLAB scripts & Simulink models
 ├── circuit_schematic.md                          # Pin-by-pin hardware netlists & breadboard wiring guide
-└── GAMMA_PPT_PROMPT.md                           # Gamma.app presentation deck generation prompt
+├── Documentaion/
+│   ├── Analog-Automatic-Irrigation-Controller (1).pptx # Presentation deck
+│   ├── Analog_Irrigation_Controller_BOM_and_Component_List.xlsx # Master Excel workbook (BOM, Pin Netlists, Parameters)
+│   └── Analog_Irrigation_Controller_Master_Guide.docx # Master Word technical documentation document
+└── Simulink/
+    ├── Analog_Irrigation_Control_System.slx      # Programmatically generated Simulink block model
+    ├── create_irrigation_simulink_model.m        # MATLAB script to programmatically build Simulink .slx model
+    └── simulate_irrigation_controller.m          # Standalone toolbox-free MATLAB simulation script
 ```
 
 ---
