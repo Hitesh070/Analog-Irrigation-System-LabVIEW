@@ -81,6 +81,8 @@ $$G_{pump}(s) = \frac{0.05}{5.0 \times 10^{-9} s^2 + 4.005 \times 10^{-5} s + 0.
 │   ├── Analog-Automatic-Irrigation-Controller (1).pptx # Presentation deck
 │   ├── Analog_Irrigation_Controller_BOM_and_Component_List.xlsx # Master Excel workbook (BOM, Pin Netlists, Parameters)
 │   └── Analog_Irrigation_Controller_Master_Guide.docx # Master Word technical documentation document
+├── LabView/
+│   └── Analog Irigation System.vi                # LabVIEW Virtual Instrument simulation model
 └── Simulink/
     ├── Analog_Irrigation_Control_System.slx      # Programmatically generated Simulink block model
     ├── create_irrigation_simulink_model.m        # MATLAB script to programmatically build Simulink .slx model
@@ -113,6 +115,11 @@ $$G_{pump}(s) = \frac{0.05}{5.0 \times 10^{-9} s^2 + 4.005 \times 10^{-5} s + 0.
    ```matlab
    simulate_irrigation_controller
    ```
+
+### 3. LabVIEW Virtual Instrument Simulation
+1. Launch NI LabVIEW 2020 or newer.
+2. Open `LabView/Analog Irigation System.vi`.
+3. Run the VI to inspect virtual instrument controls, indicators, and virtual oscilloscope waveforms.
 
 ---
 
