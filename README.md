@@ -1,14 +1,37 @@
 # Smart Automatic Irrigation, Foliage Misting & Thermal Cooling System
 
-Multi-Zone ESP32 / Arduino & Discrete Analog System
+Multi-Zone ESP32 / Arduino, NI LabVIEW & Discrete Analog System
 
 ---
 
 ## Executive Summary
 
-The **Smart Automatic Irrigation, Foliage Misting & Thermal Cooling System** is a dual-zone agricultural climate controller designed to manage root soil moisture, foliage canopy humidity, and microclimate air temperature. It supports dual deployment modes: **Microcontroller Mode (ESP32 / Arduino)** and **Discrete Analog Mode (LM358/LM393/NE556)**.
+The **Smart Automatic Irrigation, Foliage Misting & Thermal Cooling System** is a multi-zone agricultural climate controller designed to manage root soil moisture, foliage canopy humidity, and microclimate air temperature. It supports multi-platform deployment: **NI LabVIEW HMI Master Control**, **Microcontroller Mode (ESP32 / Arduino)**, and **Discrete Analog Mode (LM358/LM393/NE556)**.
 
 The system prevents rapid ON/OFF relay chattering, provides water tank dry-run protection via float switch interlocks, and verifies pump prime and flow rate using a Hall-effect water flow sensor.
+
+---
+
+## NI LabVIEW Master HMI & Control Architecture
+
+The system uses **National Instruments LabVIEW** as the **Master Human-Machine Interface (HMI) & Virtual Control Panel**. LabVIEW interfaces with the ESP32 / Arduino hardware via **NI VISA Serial Communication (USB UART at 115200 Baud)**.
+
+### LabVIEW Front Panel Virtual Controls & Indicators
+* **Virtual Gauges & Thermometers**:
+  - Root Soil Moisture Resistance Gauge ($1\text{k}\Omega - 200\text{k}\Omega$)
+  - Foliage Canopy Relative Humidity Gauge ($10\% - 90\%\text{ RH}$)
+  - Ambient Air Temperature Thermometer ($0^\circ\text{C} - 60^\circ\text{C}$)
+  - YF-S201 Volumetric Flow Rate Meter ($\text{L/min}$)
+* **Virtual LED Diagnostic Indicators**:
+  - Power 🟢, Dry Soil Demand 🟡, DC Water Pump 🔵, DC Cooling Fan 🌀, **Mist Creator #1 🟣**, **Mist Creator #2 🟣**, Tank Water Fault 🔴
+* **Master Operation Mode & Control Switches**:
+  - 3-Position Ring Switch (`AUTO`, `MANUAL`, `OFF`)
+  - Manual Toggle Switches for Water Pump, Cooling Fan, and 2x Piezo Mist Creators
+* **Virtual Threshold Sliders**:
+  - Soil Moisture Dryness Threshold Slider ($VR_1$)
+  - Humidity Target Misting Threshold Slider ($VR_3$)
+  - Temperature Target Cooling Threshold Slider ($VR_4$)
+* **Real-Time Waveform Charts**: Renders live trend plots for all sensor inputs and actuator drive signals at 10Hz sampling.
 
 ---
 
@@ -16,6 +39,7 @@ The system prevents rapid ON/OFF relay chattering, provides water tank dry-run p
 
 ### 1. Controllers & Signal Processors
 * **ESP32 DevKit V1 / Arduino Board**: Main microcontroller reading analog/digital sensor signals and driving actuator relays.
+* **NI LabVIEW Software HMI**: Virtual Control Panel and HMI for system visualization and master override.
 * **LM358 Dual Op-Amp (DIP-8)**: Configured as a Unity-Gain Voltage Follower Buffer ($K_{buf} = 1.0$) with an RC filter ($f_c = 159.15\,\text{Hz}$) to remove probe cable noise.
 * **LM393 / LM339 Comparators (DIP-14)**: Multi-channel Schmitt trigger comparators enforcing a $0.70\,\text{V}$ hysteresis band to eliminate relay chattering.
 * **NE556 Dual Timer IC (DIP-14)**: Hardware monostable pulse timers generating 30s soil watering pulses and 15s foliage misting pulses.
@@ -29,7 +53,7 @@ The system prevents rapid ON/OFF relay chattering, provides water tank dry-run p
 ### 3. Actuators & Power Drivers
 * **Small Submersible DC Water Pump (12V 3W)**: Submersible mini pump for root zone soil irrigation.
 * **Small DC Cooling Fan (12V 0.15A)**: Brushless DC fan providing thermal ventilation when ambient temperature exceeds threshold.
-* **2 Nos. Ultrasonic Mist Creators (108kHz Piezo Transducers)**: Vibrating ceramic piezoelectric atomizer discs converting water droplets into micro-fine mist for above-soil foliage.
+* **2 Nos. Ultrasonic Mist Creators (108kHz Piezo Transducers)**: Vibrating ceramic piezoelectric atomizer discs converting water droplets into micro-fine mist for leaves above soil.
 * **4-Channel Relay / Power MOSFET Driver Module (IRFZ44N)**: Solid-state drivers switching 12V DC loads safely.
 
 ---
@@ -79,10 +103,10 @@ $$G_{pump}(s) = \frac{0.05}{5.0 \times 10^{-9} s^2 + 4.005 \times 10^{-5} s + 0.
 ├── circuit_schematic.md                          # Pin-by-pin hardware netlists & breadboard wiring guide
 ├── Documentaion/
 │   ├── Analog-Automatic-Irrigation-Controller (1).pptx # Presentation deck
-│   ├── Analog_Irrigation_Controller_BOM_and_Component_List.xlsx # Master Excel workbook (BOM, Pin Netlists, Parameters)
+│   ├── Analog_Irrigation_Controller_BOM_and_Component_List.xlsx # Master Excel workbook (BOM, Pin Netlists, LabVIEW Spec)
 │   └── Analog_Irrigation_Controller_Master_Guide.docx # Master Word technical documentation document
 ├── LabView/
-│   └── Analog Irigation System.vi                # LabVIEW Virtual Instrument simulation model
+│   └── Analog Irigation System.vi                # LabVIEW Virtual Instrument master HMI & simulation model
 └── Simulink/
     ├── Analog_Irrigation_Control_System.slx      # Programmatically generated Simulink block model
     ├── create_irrigation_simulink_model.m        # MATLAB script to programmatically build Simulink .slx model
@@ -101,7 +125,13 @@ $$G_{pump}(s) = \frac{0.05}{5.0 \times 10^{-9} s^2 + 4.005 \times 10^{-5} s + 0.
 2. Navigate to `http://localhost:8080`.
 3. Adjust the sliders for Soil Moisture, Canopy Relative Humidity, and Ambient Air Temperature to test real-time switching dynamics, LEDs, analog meters, and oscilloscope waveforms.
 
-### 2. MATLAB & Simulink Control System Simulation
+### 2. NI LabVIEW Master HMI Execution
+1. Connect ESP32 / Arduino board to PC via USB cable.
+2. Launch NI LabVIEW 2020 or newer.
+3. Open `LabView/Analog Irigation System.vi`.
+4. Select the VISA Resource Name (e.g. `COM3` at 115200 Baud) and click **Run** (`Ctrl + R`) to display sensor telemetry and control all actuators in real time.
+
+### 3. MATLAB & Simulink Control System Simulation
 1. Launch MATLAB R2020a or newer.
 2. Set working directory to project folder:
    ```matlab
@@ -116,11 +146,6 @@ $$G_{pump}(s) = \frac{0.05}{5.0 \times 10^{-9} s^2 + 4.005 \times 10^{-5} s + 0.
    simulate_irrigation_controller
    ```
 
-### 3. LabVIEW Virtual Instrument Simulation
-1. Launch NI LabVIEW 2020 or newer.
-2. Open `LabView/Analog Irigation System.vi`.
-3. Run the VI to inspect virtual instrument controls, indicators, and virtual oscilloscope waveforms.
-
 ---
 
 ## Hardware Bill of Materials (BOM)
@@ -128,26 +153,27 @@ $$G_{pump}(s) = \frac{0.05}{5.0 \times 10^{-9} s^2 + 4.005 \times 10^{-5} s + 0.
 | Item | Component Name | Specification | Qty | Stage & Function |
 |---|---|---|---|---|
 | 1 | Microcontroller Board | ESP32 DevKit V1 / Arduino | 1 | Main System Controller Board |
-| 2 | Temp & Humidity Sensor | DHT11 / DHT22 Sensor Module | 1 | Foliage Canopy Temp & Humidity Sensing |
-| 3 | Soil Moisture Sensor | Resistive Soil Sensor Module | 1 | Root Zone Soil Resistance Sensing |
-| 4 | Ultrasonic Mist Creators | 108kHz Piezo Transducer Discs | 2 | 2 Nos. Foliage Misting Atomizer Discs |
-| 5 | Submersible Water Pump | 12V DC 3W Mini Pump | 1 | Root Zone Soil Irrigation Actuator |
-| 6 | Small Cooling Fan | 12V 0.15A Brushless DC Fan | 1 | Thermal Microclimate Ventilation Fan |
-| 7 | Tank Water Level Sensor | Reed Float Switch | 1 | Tank Level Dry-Run Protection Switch |
-| 8 | Water Flow Sensor | YF-S201 Hall-Effect Sensor | 1 | Pump Prime & Flow Rate Monitoring |
-| 9 | Relay / MOSFET Module | 4-Channel Relay / MOSFET Board | 1 | Actuator Power Switching Board |
-| 10 | Dual Op-Amp IC | LM358 DIP-8 | 1 | Stage 2 Signal Buffer & Filtering |
-| 11 | Quad Comparator IC | LM339 / LM393 DIP-14 | 1 | Multi-Channel Schmitt Trigger Comparators |
-| 12 | Dual Precision Timer IC | NE556 DIP-14 | 1 | Monostable Pulse Duration Timers |
-| 13 | NPN Transistors | BC547 TO-92 | 2 | Safety Interlocks & Transistor Drivers |
-| 14 | Voltage Regulator IC | LM7812 TO-220 | 1 | Regulated +12.0V DC Power Supply Rail |
-| 15 | Flyback Diodes | 1N4007 (1A 1000V) | 2 | Inductive Kickback Spike Protection |
-| 16 | Transformer & Rectifier | 230V to 15V AC Transformer, W04M | 1 Set | Power Supply Rectification Unit |
-| 17 | Potentiometers | 10kΩ & 270kΩ Pots | 4 | Calibration Controls (VR1, VR2, VR3, VR4) |
-| 18 | Passives & Board | Resistors, Capacitors, PCB | 1 Set | Circuit Wiring & Decoupling |
+| 2 | LabVIEW Software HMI | NI LabVIEW VISA HMI | 1 | Master Virtual Control Panel & HMI |
+| 3 | Temp & Humidity Sensor | DHT11 / DHT22 Sensor Module | 1 | Foliage Canopy Temp & Humidity Sensing |
+| 4 | Soil Moisture Sensor | Resistive Soil Sensor Module | 1 | Root Zone Soil Resistance Sensing |
+| 5 | Ultrasonic Mist Creators | 108kHz Piezo Transducer Discs | 2 | 2 Nos. Foliage Misting Atomizer Discs |
+| 6 | Submersible Water Pump | 12V DC 3W Mini Pump | 1 | Root Zone Soil Irrigation Actuator |
+| 7 | Small Cooling Fan | 12V 0.15A Brushless DC Fan | 1 | Thermal Microclimate Ventilation Fan |
+| 8 | Tank Water Level Sensor | Reed Float Switch | 1 | Tank Level Dry-Run Protection Switch |
+| 9 | Water Flow Sensor | YF-S201 Hall-Effect Sensor | 1 | Pump Prime & Flow Rate Monitoring |
+| 10 | Relay / MOSFET Module | 4-Channel Relay / MOSFET Board | 1 | Actuator Power Switching Board |
+| 11 | Dual Op-Amp IC | LM358 DIP-8 | 1 | Stage 2 Signal Buffer & Filtering |
+| 12 | Quad Comparator IC | LM339 / LM393 DIP-14 | 1 | Multi-Channel Schmitt Trigger Comparators |
+| 13 | Dual Precision Timer IC | NE556 DIP-14 | 1 | Monostable Pulse Duration Timers |
+| 14 | NPN Transistors | BC547 TO-92 | 2 | Safety Interlocks & Transistor Drivers |
+| 15 | Voltage Regulator IC | LM7812 TO-220 | 1 | Regulated +12.0V DC Power Supply Rail |
+| 16 | Flyback Diodes | 1N4007 (1A 1000V) | 2 | Inductive Kickback Spike Protection |
+| 17 | Transformer & Rectifier | 230V to 15V AC Transformer, W04M | 1 Set | Power Supply Rectification Unit |
+| 18 | Potentiometers | 10kΩ & 270kΩ Pots | 4 | Calibration Controls (VR1, VR2, VR3, VR4) |
+| 19 | Passives & Board | Resistors, Capacitors, PCB | 1 Set | Circuit Wiring & Decoupling |
 
 ---
 
 ## License & Citation
 
-This project is released under the MIT License. Designed for Discrete Analog & Microcontroller Control System research, university milestones, and industrial automation applications.
+This project is released under the MIT License. Designed for Multi-Platform Control System research, university milestones, and industrial automation applications.
