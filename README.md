@@ -1,36 +1,36 @@
-# Analog Automatic Irrigation, Foliage Misting & Thermal Cooling Controller
+# Smart Automatic Irrigation, Foliage Misting & Thermal Cooling System
 
-Multi-Zone Discrete Analog Industrial Automation System (Microcontroller-Free)
+Multi-Zone ESP32 / Arduino & Discrete Analog System
 
 ---
 
 ## Executive Summary
 
-The **Analog Automatic Irrigation, Foliage Misting & Thermal Cooling Controller** is a multi-zone discrete analog industrial automation system operating from a regulated +12.0V DC power rail without any digital microcontroller or software code. 
+The **Smart Automatic Irrigation, Foliage Misting & Thermal Cooling System** is a dual-zone agricultural climate controller designed to manage root soil moisture, foliage canopy humidity, and microclimate air temperature. It supports dual deployment modes: **Microcontroller Mode (ESP32 / Arduino)** and **Discrete Analog Mode (LM358/LM393/NE556)**.
 
-Conventional automated irrigation systems frequently suffer from rapid ON/OFF relay chattering, lack of pump dry-run protection, and high failure rates due to unbuffered sensor noise. This project resolves these issues by using operational amplifiers, Schmitt trigger comparators, dual monostable timers, power MOSFET drivers, piezoelectric ultrasonic atomizers, and hardware safety interlocks to achieve robust, noise-immune climate control.
+The system prevents rapid ON/OFF relay chattering, provides water tank dry-run protection via float switch interlocks, and verifies pump prime and flow rate using a Hall-effect water flow sensor.
 
 ---
 
-## System Capabilities & Subsystems
+## Complete Hardware Components & Use
 
-The controller incorporates three discrete environmental feedback loops:
+### 1. Controllers & Signal Processors
+* **ESP32 DevKit V1 / Arduino Board**: Main microcontroller reading analog/digital sensor signals and driving actuator relays.
+* **LM358 Dual Op-Amp (DIP-8)**: Configured as a Unity-Gain Voltage Follower Buffer ($K_{buf} = 1.0$) with an RC filter ($f_c = 159.15\,\text{Hz}$) to remove probe cable noise.
+* **LM393 / LM339 Comparators (DIP-14)**: Multi-channel Schmitt trigger comparators enforcing a $0.70\,\text{V}$ hysteresis band to eliminate relay chattering.
+* **NE556 Dual Timer IC (DIP-14)**: Hardware monostable pulse timers generating 30s soil watering pulses and 15s foliage misting pulses.
 
-1. **Root Zone Soil Moisture Subsystem (Below Soil)**:
-   - Measures soil probe resistance ($R_{soil} \in [1\,\text{k}\Omega, 200\,\text{k}\Omega]$).
-   - Activates a 12V DC 3W submersible water pump for a 30-second watering pulse when dry soil is detected.
+### 2. Sensors
+* **Resistive Soil Moisture Sensor Probe**: Stainless steel probe bridge measuring soil moisture resistance $R_{soil}$ ($1\,\text{k}\Omega$ wet to $200\,\text{k}\Omega$ dry).
+* **DHT11 / DHT22 Sensor Module**: Digital/analog sensor measuring foliage canopy relative humidity ($10\% - 90\%\text{ RH}$) and ambient temperature ($0^\circ\text{C} - 60^\circ\text{C}$).
+* **Tank Water Level Sensor (Reed Float Switch)**: Float switch installed in storage tank. Opens when tank is empty to prevent pump dry-running.
+* **YF-S201 Water Flow Sensor**: Hall-effect turbine sensor monitoring volumetric water flow rate ($\text{L/min}$) to detect pipe blockages and loss of pump prime.
 
-2. **Foliage Canopy Misting Subsystem (Above Soil)**:
-   - Measures relative humidity ($10\% - 90\%\text{ RH}$) using an analog RH sensor module.
-   - Activates a 108kHz Piezoelectric Ultrasonic Atomizer Disc to spray micro-fine mist onto plant leaves when air humidity drops below target threshold.
-
-3. **Ambient Thermal Cooling Subsystem (Microclimate Control)**:
-   - Measures air temperature ($0^\circ\text{C} - 60^\circ\text{C}$) using an NTC thermistor bridge.
-   - Activates a 12V DC brushless ventilation cooling fan and the ultrasonic mist maker when ambient temperature exceeds the temperature threshold.
-
-4. **Hardware Safety Interlocks**:
-   - Monitors storage tank water level via a magnetic reed float switch.
-   - BC547 NPN transistor pulls timer RESET pins LOW when the tank is empty or flow is blocked, locking out actuators to prevent thermal pump burnout.
+### 3. Actuators & Power Drivers
+* **Small Submersible DC Water Pump (12V 3W)**: Submersible mini pump for root zone soil irrigation.
+* **Small DC Cooling Fan (12V 0.15A)**: Brushless DC fan providing thermal ventilation when ambient temperature exceeds threshold.
+* **2 Nos. Ultrasonic Mist Creators (108kHz Piezo Transducers)**: Vibrating ceramic piezoelectric atomizer discs converting water droplets into micro-fine mist for above-soil foliage.
+* **4-Channel Relay / Power MOSFET Driver Module (IRFZ44N)**: Solid-state drivers switching 12V DC loads safely.
 
 ---
 
@@ -127,26 +127,27 @@ $$G_{pump}(s) = \frac{0.05}{5.0 \times 10^{-9} s^2 + 4.005 \times 10^{-5} s + 0.
 
 | Item | Component Name | Specification | Qty | Stage & Function |
 |---|---|---|---|---|
-| 1 | Dual Op-Amp IC | LM358 DIP-8 | 1 | Stage 2 Signal Buffer & Filtering |
-| 2 | Quad Comparator IC | LM339 / LM393 DIP-14 | 1 | Stage 3 & 4 Multi-Schmitt Trigger Comparators |
-| 3 | Dual Precision Timer IC | NE556 DIP-14 | 1 | Stage 5 Monostable Timers (30s Soil Pump / 15s Misting) |
-| 4 | Power MOSFETs | IRFZ44N N-Ch TO-220 | 2 | Stage 6 Power Drivers for 12V DC Pump & 12V DC Fan |
-| 5 | Ultrasonic Atomizer Module | 108kHz Piezo Transducer Board | 1 | Foliage Misting Subsystem |
-| 6 | NTC Thermistor Module | 10kΩ NTC Sensor Probe | 1 | Thermal Ventilation Subsystem |
-| 7 | Analog Humidity Sensor | HR202 / HIH-4000 Analog Module | 1 | Foliage Misting Subsystem |
-| 8 | 12V DC Cooling Fan | 12V 0.15A Brushless Fan | 1 | Thermal Ventilation Subsystem |
-| 9 | NPN Transistors | BC547 TO-92 | 2 | Stage 7 Safety Interlocks & Drivers |
-| 10 | Voltage Regulator IC | LM7812 TO-220 | 1 | Stage 8 Regulated +12.0V DC Rail |
-| 11 | Submersible Water Pump | 12V DC 3W Mini Pump | 1 | Root Zone Irrigation Actuator |
-| 12 | Tank Float Sensor | Reed Switch Float Sensor | 1 | Water Storage Level Safety Switch |
-| 13 | Soil Moisture Probes | Stainless Steel Probes | 1 Pair | Stage 1 Soil Resistance Sensing |
-| 14 | Flyback Diodes | 1N4007 (1A 1000V) | 2 | Inductive Kickback Spike Protection |
-| 15 | Transformer & Rectifier | 230V to 15V AC Transformer, W04M | 1 Set | Stage 8 Power Supply Unit |
-| 16 | Potentiometers | 10kΩ & 270kΩ Pots | 4 | Calibration Controls (VR1, VR2, VR3, VR4) |
-| 17 | Passives & Board | Resistors, Capacitors, PCB | 1 Set | Circuit Wiring & Decoupling |
+| 1 | Microcontroller Board | ESP32 DevKit V1 / Arduino | 1 | Main System Controller Board |
+| 2 | Temp & Humidity Sensor | DHT11 / DHT22 Sensor Module | 1 | Foliage Canopy Temp & Humidity Sensing |
+| 3 | Soil Moisture Sensor | Resistive Soil Sensor Module | 1 | Root Zone Soil Resistance Sensing |
+| 4 | Ultrasonic Mist Creators | 108kHz Piezo Transducer Discs | 2 | 2 Nos. Foliage Misting Atomizer Discs |
+| 5 | Submersible Water Pump | 12V DC 3W Mini Pump | 1 | Root Zone Soil Irrigation Actuator |
+| 6 | Small Cooling Fan | 12V 0.15A Brushless DC Fan | 1 | Thermal Microclimate Ventilation Fan |
+| 7 | Tank Water Level Sensor | Reed Float Switch | 1 | Tank Level Dry-Run Protection Switch |
+| 8 | Water Flow Sensor | YF-S201 Hall-Effect Sensor | 1 | Pump Prime & Flow Rate Monitoring |
+| 9 | Relay / MOSFET Module | 4-Channel Relay / MOSFET Board | 1 | Actuator Power Switching Board |
+| 10 | Dual Op-Amp IC | LM358 DIP-8 | 1 | Stage 2 Signal Buffer & Filtering |
+| 11 | Quad Comparator IC | LM339 / LM393 DIP-14 | 1 | Multi-Channel Schmitt Trigger Comparators |
+| 12 | Dual Precision Timer IC | NE556 DIP-14 | 1 | Monostable Pulse Duration Timers |
+| 13 | NPN Transistors | BC547 TO-92 | 2 | Safety Interlocks & Transistor Drivers |
+| 14 | Voltage Regulator IC | LM7812 TO-220 | 1 | Regulated +12.0V DC Power Supply Rail |
+| 15 | Flyback Diodes | 1N4007 (1A 1000V) | 2 | Inductive Kickback Spike Protection |
+| 16 | Transformer & Rectifier | 230V to 15V AC Transformer, W04M | 1 Set | Power Supply Rectification Unit |
+| 17 | Potentiometers | 10kΩ & 270kΩ Pots | 4 | Calibration Controls (VR1, VR2, VR3, VR4) |
+| 18 | Passives & Board | Resistors, Capacitors, PCB | 1 Set | Circuit Wiring & Decoupling |
 
 ---
 
 ## License & Citation
 
-This project is released under the MIT License. Designed for Discrete Analog Control System research, university milestones, and industrial automation applications.
+This project is released under the MIT License. Designed for Discrete Analog & Microcontroller Control System research, university milestones, and industrial automation applications.

@@ -1,5 +1,5 @@
 /* ==========================================================================
-   TERRAFLOW ECO-INDUSTRIAL STYLING WITH FAN & ULTRASONIC MISTING ENHANCEMENTS
+   TERRAFLOW SMART CLIMATE STYLING - ESP32 / ARDUINO & ANALOG SYSTEM
    ========================================================================== */
 
 :root {
@@ -178,15 +178,15 @@ body {
   color: #ffffff;
 }
 
-/* LED Grid (6 LEDs) */
+/* LED Grid (7 LEDs) */
 .status-grid {
   display: grid;
   grid-template-columns: repeat(4, 1fr);
   gap: 10px;
   margin-bottom: 20px;
 }
-.status-grid.six-leds {
-  grid-template-columns: repeat(3, 1fr);
+.status-grid.seven-leds {
+  grid-template-columns: repeat(4, 1fr);
 }
 .status-item {
   display: flex;
@@ -220,7 +220,8 @@ body {
 .led-dry.on { background: #f59e0b; box-shadow: 0 0 12px #f59e0b; }
 .led-pump.on { background: #3b82f6; box-shadow: 0 0 12px #3b82f6; }
 .led-fan.on { background: #06b6d4; box-shadow: 0 0 12px #06b6d4; }
-.led-mist.on { background: #a855f7; box-shadow: 0 0 12px #a855f7; }
+.led-mist1.on { background: #a855f7; box-shadow: 0 0 12px #a855f7; }
+.led-mist2.on { background: #c084fc; box-shadow: 0 0 12px #c084fc; }
 .led-fault.on { background: #ef4444; box-shadow: 0 0 12px #ef4444; }
 
 .led-label {

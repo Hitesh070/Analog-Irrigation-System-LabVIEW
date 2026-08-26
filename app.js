@@ -1,5 +1,5 @@
 /* ==========================================================================
-   TERRAFLOW MULTI-ZONE ECO-ANALOG IRRIGATION, MISTING & COOLING CONTROL
+   TERRAFLOW SMART CLIMATE CONTROL ENGINE - ESP32/ARDUINO & ANALOG SYSTEM
    ========================================================================== */
 
 document.addEventListener('DOMContentLoaded', () => {
@@ -13,23 +13,24 @@ document.addEventListener('DOMContentLoaded', () => {
   const ledDry = document.getElementById('led-dry');
   const ledPump = document.getElementById('led-pump');
   const ledFan = document.getElementById('led-fan');
-  const ledMist = document.getElementById('led-mist');
+  const ledMist1 = document.getElementById('led-mist1');
+  const ledMist2 = document.getElementById('led-mist2');
   const ledFault = document.getElementById('led-fault');
 
-  // Meter 1: Soil Moisture
+  // Meter 1: Resistive Soil Moisture Sensor
   const gaugeNeedle = document.getElementById('gauge-needle');
   const gaugeResVal = document.getElementById('gauge-res-val');
   const gaugeVoltVal = document.getElementById('gauge-volt-val');
 
-  // Meter 2: Relative Humidity
+  // Meter 2: DHT Humidity Sensor
   const humidityNeedle = document.getElementById('humidity-needle');
   const gaugeRhVal = document.getElementById('gauge-rh-val');
   const gaugeRhVolt = document.getElementById('gauge-rh-volt');
 
-  // Meter 3: Ambient Temperature
+  // Meter 3: DHT Temperature Sensor & YF-S201 Flow Sensor
   const tempNeedle = document.getElementById('temp-needle');
   const gaugeTempVal = document.getElementById('gauge-temp-val');
-  const gaugeTempVolt = document.getElementById('gauge-temp-volt');
+  const gaugeFlowVal = document.getElementById('gauge-flow-val');
 
   // Sliders
   const moistureSlider = document.getElementById('moisture-slider');
@@ -58,7 +59,7 @@ document.addEventListener('DOMContentLoaded', () => {
   let hasWaterInTank = true;
   let isPumpFlowNormal = true;
 
-  // Environmental Inputs
+  // Environmental Sensor Inputs
   let soilResistance = 100; // kΩ (1k = wet, 200k = arid)
   let canopyHumidity = 35;   // RH% (10% = dry, 90% = humid)
   let ambientTemp = 38;      // °C (0°C = cold, 60°C = hot)
@@ -147,9 +148,9 @@ document.addEventListener('DOMContentLoaded', () => {
     runSimulationStep();
   });
 
-  // --- Multi-Zone Analog Simulation Engine ---
+  // --- Multi-Zone Simulation Engine ---
   function runSimulationStep() {
-    // 1. Root Zone Soil Moisture Signal Processing (Channel 1)
+    // 1. Resistive Soil Moisture Sensor Bridge
     const vSensorSoil = vcc * (soilResistance / (rFixed + soilResistance));
 
     const needleAngleSoil = -60 + ((soilResistance - 1) / 199.0) * 120;
@@ -182,7 +183,7 @@ document.addEventListener('DOMContentLoaded', () => {
       schmittSoilState = false; // Soil is wet -> End Demand
     }
 
-    // 2. Foliage Canopy Relative Humidity Signal Processing (Channel 2)
+    // 2. DHT Humidity Sensor Input
     const vSensorRH = 0.5 + ((canopyHumidity - 10) / 80.0) * 4.0;
 
     const needleAngleRH = -60 + ((canopyHumidity - 10) / 80.0) * 120;
@@ -191,13 +192,13 @@ document.addEventListener('DOMContentLoaded', () => {
     gaugeRhVolt.textContent = `${vSensorRH.toFixed(2)} V`;
 
     if (canopyHumidity < 40) {
-      humidityText.textContent = `Low Air Humidity (${canopyHumidity}% RH)`;
+      humidityText.textContent = `Low Humidity (${canopyHumidity}% RH)`;
       humidityText.className = 'state-tag dry';
     } else if (canopyHumidity < 65) {
-      humidityText.textContent = `Moderate Humidity (${canopyHumidity}% RH)`;
+      humidityText.textContent = `Moderate (${canopyHumidity}% RH)`;
       humidityText.className = 'state-tag wet';
     } else {
-      humidityText.textContent = `Optimal Canopy Mist (${canopyHumidity}% RH)`;
+      humidityText.textContent = `Optimal Mist (${canopyHumidity}% RH)`;
       humidityText.className = 'state-tag mist';
     }
 
@@ -213,14 +214,12 @@ document.addEventListener('DOMContentLoaded', () => {
       schmittMistState = false; // High humidity -> Stop Misting
     }
 
-    // 3. Ambient Air Temperature NTC Thermistor Signal Processing (Channel 3)
-    // Temp Sensor Voltage: 0°C = 0.0V, 60°C = 6.0V (0.1V per °C)
+    // 3. DHT Temperature Sensor Input
     const vSensorTemp = (ambientTemp / 60.0) * 6.0;
 
     const needleAngleTemp = -60 + (ambientTemp / 60.0) * 120;
     tempNeedle.style.transform = `rotate(${needleAngleTemp}deg)`;
     gaugeTempVal.textContent = `${ambientTemp} °C`;
-    gaugeTempVolt.textContent = `${vSensorTemp.toFixed(2)} V`;
 
     if (ambientTemp > 35) {
       tempText.textContent = `High Heat (${ambientTemp} °C)`;
@@ -237,15 +236,15 @@ document.addEventListener('DOMContentLoaded', () => {
     tempThresholdText.textContent = `Fan Target: ${refThresholdTemp} °C (${vRefTemp.toFixed(2)} V)`;
 
     if (vSensorTemp >= vRefTemp + 0.2) {
-      schmittTempState = true;  // High temperature -> Trigger Cooling Fan & Misting
+      schmittTempState = true;  // High temperature -> Trigger Fan & 2x Mist Creators
     } else if (vSensorTemp <= vRefTemp - 0.2) {
       schmittTempState = false; // Temp normalized -> Turn OFF Fan
     }
 
-    // 4. Safety Interlocks & Tank Protection
+    // 4. Safety Interlocks & YF-S201 Flow Sensor Protection
     const hasFault = (!hasWaterInTank) || (!isPumpFlowNormal);
 
-    // 5. Dual Actuator & Fan State Machine Logic
+    // 5. Dual Actuator, Fan & 2x Mist Creators Logic
     let isPumpActive = false;
     let isFanActive = false;
     let isMistActive = false;
@@ -262,7 +261,7 @@ document.addEventListener('DOMContentLoaded', () => {
       isMistActive = !hasFault && !isRaining;
     } else {
       // AUTO Mode
-      // Soil Pump Triggering
+      // Soil Water Pump
       if (schmittSoilState && !hasFault && !isRaining) {
         if (!timerActiveSoil) {
           timerActiveSoil = true;
@@ -270,10 +269,10 @@ document.addEventListener('DOMContentLoaded', () => {
         }
       }
 
-      // Fan Triggering: High Temp turns ON Cooling Fan
+      // Cooling Fan
       isFanActive = schmittTempState && !hasFault;
 
-      // Mist Creator Triggering: Low Humidity OR High Temp triggers Piezo Mist Atomizer
+      // 2x Mist Creators (Piezoelectric Atomizers #1 and #2)
       const mistRequired = schmittMistState || schmittTempState;
       if (mistRequired && !hasFault && !isRaining) {
         if (!timerActiveMist) {
@@ -286,23 +285,28 @@ document.addEventListener('DOMContentLoaded', () => {
       isMistActive = (timerActiveMist || schmittTempState) && !hasFault && !isRaining;
     }
 
+    // Flow Sensor Display
+    const flowRate = isPumpActive ? (isPumpFlowNormal ? 1.2 : 0.0) : 0.0;
+    gaugeFlowVal.textContent = `${flowRate.toFixed(1)} L/min`;
+
     if (timerActiveSoil || timerActiveMist) {
       timerCapVoltage = Math.min(8.0, timerCapVoltage + 0.5);
     } else {
       timerCapVoltage = Math.max(0.0, timerCapVoltage - 0.8);
     }
 
-    // Output Drive Voltages
+    // Drive Voltages
     const vMosfetGate = isPumpActive ? 12.0 : 0.0;
     const vFanDrive = isFanActive ? 12.0 : 0.0;
     const vPiezoMist = isMistActive ? 12.0 : 0.0;
 
-    // LED Diagnostics Update
+    // LED Diagnostics Update (7 LEDs)
     ledPower.className = 'led led-power on';
     ledDry.className = schmittSoilState ? 'led led-dry on' : 'led led-dry';
     ledPump.className = isPumpActive ? 'led led-pump on' : 'led led-pump';
     ledFan.className = isFanActive ? 'led led-fan on' : 'led led-fan';
-    ledMist.className = isMistActive ? 'led led-mist on' : 'led led-mist';
+    ledMist1.className = isMistActive ? 'led led-mist1 on' : 'led led-mist1';
+    ledMist2.className = isMistActive ? 'led led-mist2 on' : 'led led-mist2';
     ledFault.className = hasFault ? 'led led-fault on' : 'led led-fault';
 
     if (timerActiveSoil || timerActiveMist) {
@@ -402,7 +406,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
     waveCtx.stroke();
 
-    // 3. 556 Timer Cap (Terracotta / Copper)
+    // 3. Pulse Timer Cap (Terracotta / Copper)
     waveCtx.strokeStyle = '#ea580c';
     waveCtx.lineWidth = 2;
     waveCtx.beginPath();
@@ -414,7 +418,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
     waveCtx.stroke();
 
-    // 4. MOSFET Pump Gate (Blue)
+    // 4. Water Pump Gate (Blue)
     waveCtx.strokeStyle = '#3b82f6';
     waveCtx.lineWidth = 2;
     waveCtx.beginPath();
@@ -438,7 +442,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
     waveCtx.stroke();
 
-    // 6. Ultrasonic Piezo Mist Driver (Purple)
+    // 6. 2x Mist Creators Piezo Driver (Purple)
     waveCtx.strokeStyle = '#a855f7';
     waveCtx.lineWidth = 2;
     waveCtx.beginPath();

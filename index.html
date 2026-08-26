@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Multi-Zone Analog Irrigation, Thermal Fan & Ultrasonic Misting Controller</title>
+  <title>Smart Irrigation, Foliage Misting & Thermal Cooling System (ESP32/Arduino & Analog)</title>
   <link rel="stylesheet" href="styles.css">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -30,9 +30,9 @@
             </div>
           </div>
           <div>
-            <div class="brand-tag">MULTI-ZONE DISCRETE ANALOG AUTOMATION SYSTEM</div>
-            <h1>Analog Automatic Irrigation, Misting & Cooling Controller</h1>
-            <p class="subtitle">Soil Moisture Sensing • Relative Humidity Misting • NTC Thermal Fan Control • Pump Protection</p>
+            <div class="brand-tag">ESP32 / ARDUINO & ANALOG SMART CLIMATE SYSTEM</div>
+            <h1>Smart Automatic Irrigation & Dual Mist Controller</h1>
+            <p class="subtitle">Resistive Soil Sensor • DHT Temp & Humidity • 2x Mist Creators • Cooling Fan • Water Pump • Tank Level & Flow Protection</p>
           </div>
         </div>
         <div class="badge-live-status">
@@ -53,27 +53,27 @@
             </div>
           </div>
 
-          <!-- LED Status Section (6 LEDs including Fan & Mist Creator) -->
-          <div class="status-grid six-leds">
+          <!-- LED Status Section (7 LEDs including 2x Mist Creators, Fan, Flow & Tank Level) -->
+          <div class="status-grid seven-leds">
             <div class="status-item">
               <div class="led-ring">
                 <div class="led led-power on" id="led-power"></div>
               </div>
               <span class="led-label">Power 🟢</span>
-              <span class="led-sub">12V Regulated</span>
+              <span class="led-sub">ESP32 / 12V</span>
             </div>
             <div class="status-item">
               <div class="led-ring">
                 <div class="led led-dry" id="led-dry"></div>
               </div>
               <span class="led-label">Dry Soil 🟡</span>
-              <span class="led-sub">Soil Demand</span>
+              <span class="led-sub">Moisture Demand</span>
             </div>
             <div class="status-item">
               <div class="led-ring">
                 <div class="led led-pump" id="led-pump"></div>
               </div>
-              <span class="led-label">Pump Active 🔵</span>
+              <span class="led-label">Water Pump 🔵</span>
               <span class="led-sub">Root Irrigation</span>
             </div>
             <div class="status-item">
@@ -81,31 +81,38 @@
                 <div class="led led-fan" id="led-fan"></div>
               </div>
               <span class="led-label">Cooling Fan 🌀</span>
-              <span class="led-sub">Ventilation Fan</span>
+              <span class="led-sub">Thermal Fan</span>
             </div>
             <div class="status-item">
               <div class="led-ring">
-                <div class="led led-mist" id="led-mist"></div>
+                <div class="led led-mist1" id="led-mist1"></div>
               </div>
-              <span class="led-label">Mist Creator 🟣</span>
-              <span class="led-sub">Piezo Atomizer</span>
+              <span class="led-label">Mist #1 🟣</span>
+              <span class="led-sub">Piezo Atomizer 1</span>
+            </div>
+            <div class="status-item">
+              <div class="led-ring">
+                <div class="led led-mist2" id="led-mist2"></div>
+              </div>
+              <span class="led-label">Mist #2 🟣</span>
+              <span class="led-sub">Piezo Atomizer 2</span>
             </div>
             <div class="status-item">
               <div class="led-ring">
                 <div class="led led-fault" id="led-fault"></div>
               </div>
               <span class="led-label">Tank Fault 🔴</span>
-              <span class="led-sub">Empty / Dry Run</span>
+              <span class="led-sub">Empty / Flow Block</span>
             </div>
           </div>
 
-          <!-- Triple Meters Container: Soil Moisture, Relative Humidity & Temperature -->
+          <!-- Triple Gauges Container: Soil Resistance, Canopy Relative Humidity & Air Temperature -->
           <div class="dual-meters-wrapper triple-meters">
-            <!-- Meter 1: Analog Soil Moisture Level Gauge -->
+            <!-- Meter 1: Resistive Soil Moisture Meter -->
             <div class="gauge-container">
               <div class="gauge-header">
-                <span>🌱 Root Soil Moisture Meter</span>
-                <span class="gauge-badge">LM358/LM393 Ch 1</span>
+                <span>🌱 Soil Moisture Sensor (Resistive Probe)</span>
+                <span class="gauge-badge">Pin ADC0 / GPIO34</span>
               </div>
               
               <div class="analog-gauge-wrap">
@@ -134,17 +141,17 @@
                   <strong id="gauge-res-val" class="val-green">100 kΩ</strong>
                 </div>
                 <div class="gauge-val-box">
-                  <span class="lbl">Sensor Voltage:</span>
+                  <span class="lbl">ADC Voltage:</span>
                   <strong id="gauge-volt-val" class="val-amber">2.50 V</strong>
                 </div>
               </div>
             </div>
 
-            <!-- Meter 2: Canopy Relative Humidity Gauge -->
+            <!-- Meter 2: Relative Humidity Meter (DHT Sensor) -->
             <div class="gauge-container humidity-gauge-container">
               <div class="gauge-header">
-                <span>💨 Canopy Relative Humidity Meter</span>
-                <span class="gauge-badge">LM393 Ch 2</span>
+                <span>💨 Humidity Sensor (DHT Module)</span>
+                <span class="gauge-badge">Pin GPIO4 / OneWire</span>
               </div>
               
               <div class="analog-gauge-wrap">
@@ -161,39 +168,36 @@
                 </div>
 
                 <div class="gauge-ticks">
-                  <span class="tick-dry">Dry RH (20%)</span>
+                  <span class="tick-dry">Dry (20% RH)</span>
                   <span class="tick-moist">Normal (50%)</span>
-                  <span class="tick-purple">High RH (85%)</span>
+                  <span class="tick-purple">High (85% RH)</span>
                 </div>
               </div>
 
               <div class="gauge-value-display">
                 <div class="gauge-val-box">
-                  <span class="lbl">Canopy Humidity:</span>
+                  <span class="lbl">Relative Humidity:</span>
                   <strong id="gauge-rh-val" class="val-purple">35 % RH</strong>
                 </div>
                 <div class="gauge-val-box">
-                  <span class="lbl">RH Sensor Voltage:</span>
+                  <span class="lbl">DHT Signal:</span>
                   <strong id="gauge-rh-volt" class="val-amber">1.75 V</strong>
                 </div>
               </div>
             </div>
 
-            <!-- Meter 3: Ambient Air Temperature Meter (NEW) -->
+            <!-- Meter 3: Temperature Meter (DHT Sensor) -->
             <div class="gauge-container temp-gauge-container">
               <div class="gauge-header">
-                <span>🌡️ Ambient Air Temperature Meter</span>
-                <span class="gauge-badge">NTC Thermistor Bridge</span>
+                <span>🌡️ Temperature Sensor (DHT Module)</span>
+                <span class="gauge-badge">Pin GPIO4 / Digital</span>
               </div>
               
               <div class="analog-gauge-wrap">
                 <svg viewBox="0 0 240 135" class="gauge-svg">
                   <path d="M 30 120 A 90 90 0 0 1 210 120" fill="none" stroke="rgba(255,255,255,0.08)" stroke-width="14" stroke-linecap="round"/>
-                  <!-- Green: Normal Temp (0°C to 28°C) -->
                   <path d="M 30 120 A 90 90 0 0 1 70 48" fill="none" stroke="#10b981" stroke-width="12" stroke-linecap="round"/>
-                  <!-- Yellow: Warm Temp (28°C to 35°C) -->
                   <path d="M 73 45 A 90 90 0 0 1 167 45" fill="none" stroke="#f59e0b" stroke-width="12"/>
-                  <!-- Red: High Heat (35°C to 60°C) -->
                   <path d="M 170 48 A 90 90 0 0 1 210 120" fill="none" stroke="#ef4444" stroke-width="12" stroke-linecap="round"/>
                 </svg>
 
@@ -215,8 +219,8 @@
                   <strong id="gauge-temp-val" class="val-red">38 °C</strong>
                 </div>
                 <div class="gauge-val-box">
-                  <span class="lbl">NTC Voltage:</span>
-                  <strong id="gauge-temp-volt" class="val-amber">3.80 V</strong>
+                  <span class="lbl">Flow Sensor Rate:</span>
+                  <strong id="gauge-flow-val" class="val-amber">1.2 L/min</strong>
                 </div>
               </div>
             </div>
@@ -225,14 +229,14 @@
           <!-- System Control Switches -->
           <div class="switches-section">
             <div class="switches-title">
-              <span>🎚️ System Control Panel</span>
+              <span>🎚️ Hardware System Controls</span>
             </div>
             
             <div class="control-group">
-              <label>Operation Mode (3-Position Panel Switch):</label>
+              <label>Controller Board Mode (ESP32 / Arduino / Analog):</label>
               <div class="mode-toggle">
                 <button class="mode-btn" data-mode="OFF">OFF</button>
-                <button class="mode-btn active" data-mode="AUTO">AUTO</button>
+                <button class="mode-btn active" data-mode="AUTO">AUTO (ESP32)</button>
                 <button class="mode-btn" data-mode="MANUAL">MANUAL</button>
               </div>
             </div>
@@ -244,8 +248,8 @@
                   <span class="slider"></span>
                 </label>
                 <div class="toggle-info">
-                  <span class="toggle-title">🌧️ Rain Lockout</span>
-                  <span class="toggle-sub">Disables irrigation & misting when raining</span>
+                  <span class="toggle-title">🌧️ Rain Lockout Switch</span>
+                  <span class="toggle-sub">Disables pump & mist creators when raining</span>
                 </div>
               </div>
 
@@ -255,8 +259,8 @@
                   <span class="slider"></span>
                 </label>
                 <div class="toggle-info">
-                  <span class="toggle-title">🚰 Tank Level Sensor</span>
-                  <span class="toggle-sub">Water available in storage tank</span>
+                  <span class="toggle-title">🚰 Tank Water Level Sensor</span>
+                  <span class="toggle-sub">Dry-run protection float switch</span>
                 </div>
               </div>
 
@@ -266,8 +270,8 @@
                   <span class="slider"></span>
                 </label>
                 <div class="toggle-info">
-                  <span class="toggle-title">⚙️ Flow & Current Sensor</span>
-                  <span class="toggle-sub">Normal pump current & prime flow</span>
+                  <span class="toggle-title">⚙️ YF-S201 Water Flow Sensor</span>
+                  <span class="toggle-sub">Hall-effect pump prime & flow detection</span>
                 </div>
               </div>
             </div>
@@ -279,22 +283,22 @@
           <div class="card-header">
             <div class="header-title-box">
               <span class="header-icon">🌿</span>
-              <h2>Multi-Parameter Climate & Misting Controller</h2>
+              <h2>Sensors & Actuators Control Engine</h2>
             </div>
             <div class="timer-display">
-              <span class="timer-icon">⏱️</span> 556 Dual Timer: 
+              <span class="timer-icon">⏱️</span> Pulse Timer: 
               <span id="timer-state-badge" class="badge timer-badge">IDLE</span>
               <span id="timer-countdown" class="timer-time">--</span>
             </div>
           </div>
 
-          <!-- Environment Sliders (Soil, Humidity, Temperature & Thresholds) -->
+          <!-- Environment Sliders (Soil, Humidity, Temperature & Sensitivity Pots) -->
           <div class="env-controls-wrapper full-width-sliders">
             <div class="env-sliders grid-3col">
-              <!-- Slider 1: Soil Moisture -->
+              <!-- Slider 1: Soil Moisture Resistance -->
               <div class="control-card">
                 <div class="control-card-header">
-                  <label for="moisture-slider"><strong>1. Soil Moisture Resistance:</strong></label>
+                  <label for="moisture-slider"><strong>1. Soil Sensor (Resistive Probe):</strong></label>
                   <span id="moisture-text" class="state-tag dry">Dry Soil (100 kΩ)</span>
                 </div>
                 <input type="range" id="moisture-slider" min="1" max="200" value="100" class="custom-slider eco-slider-green">
@@ -309,7 +313,7 @@
               <!-- Slider 2: Canopy Relative Humidity (RH%) -->
               <div class="control-card">
                 <div class="control-card-header">
-                  <label for="humidity-slider"><strong>2. Canopy Relative Humidity (RH%):</strong></label>
+                  <label for="humidity-slider"><strong>2. Humidity Sensor (DHT Module):</strong></label>
                   <span id="humidity-text" class="state-tag mist">Low Humidity (35% RH)</span>
                 </div>
                 <input type="range" id="humidity-slider" min="10" max="90" value="35" class="custom-slider eco-slider-purple">
@@ -321,10 +325,10 @@
                 </div>
               </div>
 
-              <!-- Slider 3: Ambient Air Temperature (°C) (NEW) -->
+              <!-- Slider 3: Ambient Air Temperature (°C) -->
               <div class="control-card">
                 <div class="control-card-header">
-                  <label for="temp-slider"><strong>3. Ambient Air Temperature (°C):</strong></label>
+                  <label for="temp-slider"><strong>3. Temperature Sensor (DHT Module):</strong></label>
                   <span id="temp-text" class="state-tag temp-hot">High Heat (38 °C)</span>
                 </div>
                 <input type="range" id="temp-slider" min="0" max="60" value="38" class="custom-slider eco-slider-red">
@@ -339,22 +343,22 @@
               <!-- Slider 4: Soil Threshold Potentiometer (VR1) -->
               <div class="control-card">
                 <div class="control-card-header">
-                  <label for="threshold-slider"><strong>Soil Moisture Threshold (VR1):</strong></label>
+                  <label for="threshold-slider"><strong>Soil Moisture Threshold (VR1 / ADC):</strong></label>
                   <span id="threshold-text" class="val-gold">Threshold: 50 kΩ (2.50 V)</span>
                 </div>
                 <input type="range" id="threshold-slider" min="10" max="150" value="50" class="custom-slider eco-slider-gold">
               </div>
 
-              <!-- Slider 5: Humidity Target Threshold Potentiometer (VR3) -->
+              <!-- Slider 5: Humidity Target Misting Threshold Potentiometer (VR3) -->
               <div class="control-card">
                 <div class="control-card-header">
-                  <label for="rh-threshold-slider"><strong>Humidity Misting Target (VR3):</strong></label>
+                  <label for="rh-threshold-slider"><strong>Humidity Target Threshold (VR3):</strong></label>
                   <span id="rh-threshold-text" class="val-purple">Misting Target: 60% RH (3.00 V)</span>
                 </div>
                 <input type="range" id="rh-threshold-slider" min="30" max="80" value="60" class="custom-slider eco-slider-purple">
               </div>
 
-              <!-- Slider 6: Temperature Threshold Potentiometer (VR4) (NEW) -->
+              <!-- Slider 6: Temperature Threshold Potentiometer (VR4) -->
               <div class="control-card">
                 <div class="control-card-header">
                   <label for="temp-threshold-slider"><strong>Temperature Threshold (VR4):</strong></label>
@@ -375,10 +379,10 @@
               <div class="waveform-legend">
                 <span class="leg-item leg-sensor">Soil V (TP1)</span>
                 <span class="leg-item leg-comp">Soil Comp (TP3)</span>
-                <span class="leg-item leg-timer">556 Cap (TP4)</span>
+                <span class="leg-item leg-timer">Pulse Cap (TP4)</span>
                 <span class="leg-item leg-mosfet">Pump Gate (TP5)</span>
                 <span class="leg-item leg-fan">Fan Drive (TP6)</span>
-                <span class="leg-item leg-mist">Piezo Mist (TP7)</span>
+                <span class="leg-item leg-mist">Mist 1&2 (TP7)</span>
               </div>
             </div>
             <canvas id="waveform-canvas" width="700" height="220"></canvas>
@@ -389,7 +393,7 @@
 
     <!-- Footer -->
     <footer class="app-footer">
-      <p>Multi-Zone Analog Irrigation, Misting & Thermal Cooling Controller • Soil Moisture Sensing • Piezoelectric Ultrasonic Mist Sprayer • NTC Cooling Fan Control</p>
+      <p>Smart Automatic Irrigation & Dual Mist Controller • ESP32 / Arduino / Discrete Analog System • Resistive Soil Sensor • DHT Temp & Humidity • 2x Piezo Mist Creators • Small Water Pump • Cooling Fan • Tank Level & Flow Protection</p>
     </footer>
   </div>
 
