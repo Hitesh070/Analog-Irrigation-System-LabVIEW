@@ -117,25 +117,61 @@ $$G_{pump}(s) = \frac{0.05}{5.0 \times 10^{-9} s^2 + 4.005 \times 10^{-5} s + 0.
 
 ## Instructions for Execution
 
+## Repository Structure
+
+```text
+Analog Automatic Irrigation Controller/
+├── Arduino/
+│   ├── logic/
+│   │   └── logic.ino                # Production Arduino Master code (I2C LCD & LabVIEW link)
+│   └── testing/
+│       └── testing.ino              # Hardware component testing bench code
+├── Documentation/
+│   ├── Analog_Automatic_Irrigation_Controller.pptx         # Project presentation deck
+│   ├── Analog_Irrigation_Controller_BOM_and_Component_List.xlsx # Master BOM & specs
+│   ├── Analog_Irrigation_Controller_Master_Guide.docx       # Complete project report
+│   ├── circuit_schematic.md                                 # Hardware netlists & circuit schematics
+│   ├── HOW_TO_RUN_SIMULINK_MODEL.md                         # Simulink step-by-step guide
+│   └── PROJECT_HARDWARE_AND_SIMULINK_MASTER_GUIDE.md        # Comprehensive integration guide
+├── LabView/
+│   ├── control panel.vi             # Main LabVIEW Master HMI Dashboard
+│   └── Analog Irigation System.vi   # Standalone simulation VI
+├── Simulink/
+│   ├── Analog_Irrigation_Control_System.slx  # Simulink physical control model
+│   ├── create_irrigation_simulink_model.m    # Model generator script
+│   └── simulate_irrigation_controller.m      # Simulation execution script
+├── Web_Simulator/
+│   ├── assets/                      # UI graphics and diagrams
+│   ├── index.html                   # Interactive browser simulator
+│   ├── styles.css                   # Industrial styling
+│   └── app.js                       # Browser state machine engine
+└── README.md                        # Master project documentation
+```
+
+---
+
+## Quick Start & Execution
+
 ### 1. Web Simulation Dashboard
-1. Open `index.html` in any modern web browser or host using a local HTTP server:
+1. Open `Web_Simulator/index.html` in any modern web browser or host using a local HTTP server:
    ```bash
+   cd Web_Simulator
    python -m http.server 8080
    ```
 2. Navigate to `http://localhost:8080`.
 3. Adjust the sliders for Soil Moisture, Canopy Relative Humidity, and Ambient Air Temperature to test real-time switching dynamics, LEDs, analog meters, and oscilloscope waveforms.
 
 ### 2. NI LabVIEW Master HMI Execution
-1. Connect ESP32 / Arduino board to PC via USB cable.
-2. Launch NI LabVIEW 2020 or newer.
-3. Open `LabView/Analog Irigation System.vi`.
-4. Select the VISA Resource Name (e.g. `COM3` at 115200 Baud) and click **Run** (`Ctrl + R`) to display sensor telemetry and control all actuators in real time.
+1. Connect Arduino board to PC via USB cable.
+2. Launch NI LabVIEW.
+3. Open `LabView/control panel.vi`.
+4. Select your COM port from the `Port` dropdown and click **Run** (`Ctrl + R`) to display sensor telemetry and control all actuators in real time.
 
 ### 3. MATLAB & Simulink Control System Simulation
-1. Launch MATLAB R2020a or newer.
-2. Set working directory to project folder:
+1. Launch MATLAB.
+2. Navigate to the `Simulink` directory:
    ```matlab
-   cd('c:\Users\hites\OneDrive\Documents\Projects & Research Work\Analog Automatic Irrigation Controller')
+   cd('Simulink')
    ```
 3. Build and load the Simulink block diagram:
    ```matlab
