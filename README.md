@@ -228,6 +228,6 @@ Open `http://localhost:8080` in your web browser. Interact with the sensor slide
 
 ## Author & License
 
-- **Developer**: Hitesh V S (VIT Chennai)
+- **Developer**: Hitesh V S
 - **GitHub**: [@Hitesh070](https://github.com/Hitesh070)
 - **License**: Released under the [MIT License](LICENSE).
