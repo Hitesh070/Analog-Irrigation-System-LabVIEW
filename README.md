@@ -100,16 +100,16 @@ flowchart TD
     end
 
     subgraph Conditioning ["Analog Conditioning & Timing"]
-        Buffer["LM358 Active Buffer\n(Unity Gain, fc = 159.15 Hz)"]
-        Schmitt["LM393 Schmitt Trigger\n(ΔV = 0.70V Hysteresis)"]
-        Timers["NE556 Monostable Timers\n(30s Irrigation / 14s Misting)"]
+        Buffer["LM358 Active Buffer<br/>(Unity Gain, fc = 159.15 Hz)"]
+        Schmitt["LM393 Schmitt Trigger<br/>(ΔV = 0.70V Hysteresis)"]
+        Timers["NE556 Monostable Timers<br/>(30s Irrigation / 14s Misting)"]
     end
 
     subgraph Control ["Supervisory & Microcontroller Layer"]
-        MCU["Arduino Uno / ESP32\n(115200 Baud Serial Controller)"]
-        LCD["16x2 I2C LCD Display\n(Address 0x27)"]
-        LabVIEW["NI LabVIEW Master HMI\n(control panel.vi)"]
-        WebSim["HTML5 Canvas Web Simulator\n(Local Port 8080)"]
+        MCU["Arduino Uno / ESP32<br/>(115200 Baud Serial Controller)"]
+        LCD["16x2 I2C LCD Display<br/>(Address 0x27)"]
+        LabVIEW["NI LabVIEW Master HMI<br/>(control panel.vi)"]
+        WebSim["HTML5 Canvas Web Simulator<br/>(Local Port 8080)"]
     end
 
     subgraph Actuators ["12V Actuator Driver Rail"]
@@ -308,30 +308,30 @@ Open `http://localhost:8080` in your web browser. Drag the soil moisture and tem
 
 ```mermaid
 flowchart TD
-    Start([System Initialization]) --> ReadSensors[Sample Soil Moisture A0, DHT22 Pin 4, Float Pin 7]
-    ReadSensors --> CheckFloat{Reservoir Float Switch Closed?}
+    Start(["System Initialization"]) --> ReadSensors["Sample Soil Moisture A0, DHT22 Pin 4, Float Pin 7"]
+    ReadSensors --> CheckFloat{"Reservoir Float Switch Closed?"}
     
-    CheckFloat -- No (Empty) --> Lockout[EMERGENCY LOCKOUT:\nDisable Pump Relay, Trigger Alarm LED]
-    Lockout --> StreamUART[Transmit Serial Telemetry to LabVIEW]
+    CheckFloat -- No (Empty) --> Lockout["EMERGENCY LOCKOUT:<br/>Disable Pump Relay, Trigger Alarm LED"]
+    Lockout --> StreamUART["Transmit Serial Telemetry to LabVIEW"]
     
-    CheckFloat -- Yes (Water Present) --> EvalSoil{Soil Voltage > 2.85V (Dry)?}
+    CheckFloat -- Yes (Water Present) --> EvalSoil{"Soil Voltage &gt; 2.85V (Dry)?"}
     
-    EvalSoil -- Yes --> TriggerPump[Engage Relay 1: 12V Water Pump\nStart 30s NE556 Timer Pulse]
-    EvalSoil -- No --> CheckMoist{Soil Voltage < 2.15V (Wet)?}
-    CheckMoist -- Yes --> StopPump[Halt Water Pump Relay]
-    CheckMoist -- No --> HoldPump[Maintain Current Pump State (Hysteresis Band)]
+    EvalSoil -- Yes --> TriggerPump["Engage Relay 1: 12V Water Pump<br/>Start 30s NE556 Timer Pulse"]
+    EvalSoil -- No --> CheckMoist{"Soil Voltage &lt; 2.15V (Wet)?"}
+    CheckMoist -- Yes --> StopPump["Halt Water Pump Relay"]
+    CheckMoist -- No --> HoldPump["Maintain Current Pump State (Hysteresis Band)"]
     
-    TriggerPump & StopPump & HoldPump --> EvalTemp{Temperature > 30°C?}
-    EvalTemp -- Yes --> TriggerFan[Engage Relay 2: 12V Cooling Fan]
-    EvalTemp -- No --> StopFan[Disengage Cooling Fan]
+    TriggerPump & StopPump & HoldPump --> EvalTemp{"Temperature &gt; 30°C?"}
+    EvalTemp -- Yes --> TriggerFan["Engage Relay 2: 12V Cooling Fan"]
+    EvalTemp -- No --> StopFan["Disengage Cooling Fan"]
     
-    TriggerFan & StopFan --> EvalHumidity{Humidity < 40% RH?}
-    EvalHumidity -- Yes --> TriggerMist[Engage Relay 3: 108kHz Atomizers\nStart 14s Misting Timer]
-    EvalHumidity -- No --> StopMist[Disengage Atomizers]
+    TriggerFan & StopFan --> EvalHumidity{"Humidity &lt; 40% RH?"}
+    EvalHumidity -- Yes --> TriggerMist["Engage Relay 3: 108kHz Atomizers<br/>Start 14s Misting Timer"]
+    EvalHumidity -- No --> StopMist["Disengage Atomizers"]
     
-    TriggerMist & StopMist --> UpdateLCD[Write States to 16x2 I2C LCD]
+    TriggerMist & StopMist --> UpdateLCD["Write States to 16x2 I2C LCD"]
     UpdateLCD --> StreamUART
-    StreamUART --> Delay[Wait 100 ms Cycle Interval] --> ReadSensors
+    StreamUART --> Delay["Wait 100 ms Cycle Interval"] --> ReadSensors
 ```
 
 ---
