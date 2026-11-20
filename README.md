@@ -1,6 +1,7 @@
 # Smart Automatic Irrigation, Foliage Misting & Thermal Cooling System
 
 <p align="center">
+  <img src="https://img.shields.io/badge/Award-2nd%20Prize%20%7C%20Open%20House%202026-blue?style=for-the-badge" alt="Award 2nd Prize" />
   <img src="https://img.shields.io/badge/NI_LabVIEW-2020%2B-F4D03F?style=for-the-badge&logo=nationalinstruments&logoColor=black" alt="LabVIEW" />
   <img src="https://img.shields.io/badge/Arduino%20%2F%20ESP32-C%2B%2B-00979D?style=for-the-badge&logo=arduino&logoColor=white" alt="Arduino / ESP32" />
   <img src="https://img.shields.io/badge/MATLAB-Simulink-0076A8?style=for-the-badge&logo=mathworks&logoColor=white" alt="MATLAB / Simulink" />
@@ -15,6 +16,7 @@ An autonomous multi-zone agricultural climate controller designed to manage root
 
 ## Table of Contents
 - [Executive Summary](#executive-summary)
+- [Awards & Recognition](#awards--recognition)
 - [System Architecture](#system-architecture)
 - [NI LabVIEW Master HMI](#ni-labview-master-hmi)
 - [Control System Design & Transfer Functions](#control-system-design--transfer-functions)
@@ -38,6 +40,14 @@ Agricultural precision environments often suffer from irregular watering cycles,
 2. **Ultrasonic Foliage Canopy Misting**: Dual 108 kHz piezoelectric atomizers create micro-fine humidity mist without waterlogging soil.
 3. **Microclimate Ventilation**: High-airflow DC cooling fans automatically engage during thermal spikes.
 4. **Hardware Safety Interlocks**: Float switch dry-run protection immediately halts pumps when storage tanks are depleted, while Hall-effect turbine sensors monitor volumetric flow.
+
+---
+
+## Awards & Recognition
+
+- **Second Place (2nd Prize)** — *Open House Project Competition (21st October 2026)*  
+  Organized by the **School of Electrical Engineering (SELECT), Vellore Institute of Technology (VIT), Chennai**.  
+  Recognized for technical excellence, embedded instrumentation, and closed-loop telemetry integration. Verified team certificates are archived in [`Documentation/Certificates/`](Documentation/Certificates/).
 
 ---
 
@@ -155,18 +165,29 @@ $$T_{\text{pulse}} = 1.1 \cdot R_{\text{timer}} \cdot C_{\text{timer}}$$
 │   └── testing/
 │       └── testing.ino              # Hardware component standalone test bench sketch
 ├── Documentation/
-│   ├── Analog_Automatic_Irrigation_System_Project_Report.docx # Comprehensive engineering technical report
-│   ├── Analog_Irrigation_Block_Diagram.png                    # Functional system block diagram
-│   ├── circuit_schematic.png                                  # Full schematic diagram of analog circuitry
-│   ├── HOW_TO_RUN.md                                          # Detailed software and hardware execution steps
-│   └── PROJECT_HANDOVER.md                                    # Project handover notes & design documentation
+│   ├── Certificates/                # Open House Competition 2nd Prize Certificates (PDF, PNG, JPG)
+│   ├── Analog_Automatic_Irrigation_Controller_Project_Report.docx # Comprehensive engineering technical report (Word)
+│   ├── Analog_Automatic_Irrigation_Controller_Project_Report.pdf  # Comprehensive engineering technical report (PDF)
+│   ├── PROJECT_REPORT.md                                          # Complete technical documentation (Markdown)
+│   ├── block_diagram.png                                          # Functional system block diagram
+│   ├── experimental_setup.png                                     # Hardware testbench & experimental setup photo
+│   ├── circuit_schematic.md                                       # Full schematic and component connections
+│   ├── HOW_TO_RUN_SIMULINK_MODEL.md                              # MATLAB & Simulink model execution guide
+│   └── PROJECT_HARDWARE_AND_SIMULINK_MASTER_GUIDE.md              # Project hardware & Simulink master guide
+├── Images/
+│   ├── Arduino.png                  # Arduino hardware breadboard & interfacing setup
+│   ├── Front Panel.png              # NI LabVIEW Front Panel GUI
+│   ├── Back Panel.png               # NI LabVIEW Block Diagram backend
+│   ├── Simulink.png                 # MATLAB/Simulink simulation model
+│   ├── Frontview.jpeg               # Physical system enclosure & front view
+│   └── Topview.jpeg                 # Hardware chamber top view & sensor layout
 ├── LabView/
 │   ├── control panel.vi             # Main LabVIEW Master HMI Dashboard
 │   └── Analog Irigation System.vi   # Standalone LabVIEW simulation model
 ├── Simulink/
-│   ├── Analog_Irrigation_System.slx # Simulink dynamic system block model
-│   ├── create_irrigation_model.m    # MATLAB script programmatically generating the Simulink model
-│   └── simulate_irrigation.m        # Standalone MATLAB numerical simulation script
+│   ├── Analog_Irrigation_Control_System.slx # Simulink dynamic system block model
+│   ├── create_irrigation_simulink_model.m  # MATLAB script generating the Simulink model
+│   └── simulate_irrigation_controller.m    # Standalone MATLAB numerical simulation script
 ├── Web_Simulator/
 │   ├── index.html                   # Interactive browser-based simulation dashboard
 │   ├── styles.css                   # Glassmorphic eco-industrial UI stylesheet
@@ -226,8 +247,11 @@ Open `http://localhost:8080` in your web browser. Interact with the sensor slide
 
 ---
 
-## Author & License
+## Authors & Acknowledgements
 
-- **Developer**: Hitesh V S
+- **Developer**: Hitesh V S (25BEE1165)
+- **Collaborators / Teammates**: Vijay Varshan P (25BEE1148), Adithya K S (25BEE1101)
+- **Institution**: School of Electrical Engineering (SELECT), Vellore Institute of Technology (VIT), Chennai
+- **Course Faculty**: Dr. Aravind C K
 - **GitHub**: [@Hitesh070](https://github.com/Hitesh070)
 - **License**: Released under the [MIT License](LICENSE).
