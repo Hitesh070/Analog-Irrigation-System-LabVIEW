@@ -385,15 +385,19 @@ The repository contains experimental test bench photography, hardware enclosures
 
 ### Mathematical Circuit Tuning Parameters
 
-1. **Active Voltage Buffer ($f_c = 159.15\text{ Hz}$)**:
-   $$f_c = \frac{1}{2\pi R_f C_f} = \frac{1}{2\pi \cdot 10000 \cdot 0.1 \times 10^{-6}} = 159.15\text{ Hz}$$
-2. **Schmitt Trigger Trip Thresholds**:
-   - Upper Threshold ($V_{\text{UTP}}$): $2.85\text{ V DC}$ (Dry soil trip point)
-   - Lower Threshold ($V_{\text{LTP}}$): $2.15\text{ V DC}$ (Moist soil cutoff point)
-   - Hysteresis Band ($\Delta V_H$): $0.70\text{ V DC}$
-3. **NE556 Monostable Pulse Width ($T = 1.1 R C$)**:
-   - Soil Watering Duration: $1.1 \cdot 270\text{ k}\Omega \cdot 100\ \mu\text{F} \approx 29.7\text{ seconds}$
-   - Canopy Misting Duration: $1.1 \cdot 270\text{ k}\Omega \cdot 47\ \mu\text{F} \approx 14.0\text{ seconds}$
+#### 1. Active Voltage Buffer ($f_c = 159.15\text{ Hz}$)
+$$
+f_c = \frac{1}{2\pi R_f C_f} = \frac{1}{2\pi \cdot 10000 \cdot 0.1 \times 10^{-6}} = 159.15\text{ Hz}
+$$
+
+#### 2. Schmitt Trigger Trip Thresholds
+- Upper Threshold ($V_{\text{UTP}}$): $2.85\text{ V DC}$ (Dry soil trip point)
+- Lower Threshold ($V_{\text{LTP}}$): $2.15\text{ V DC}$ (Moist soil cutoff point)
+- Hysteresis Band ($\Delta V_H$): $0.70\text{ V DC}$
+
+#### 3. NE556 Monostable Pulse Width ($T = 1.1 R C$)
+- Soil Watering Duration: $1.1 \cdot 270\text{ k}\Omega \cdot 100\ \mu\text{F} \approx 29.7\text{ seconds}$
+- Canopy Misting Duration: $1.1 \cdot 270\text{ k}\Omega \cdot 47\ \mu\text{F} \approx 14.0\text{ seconds}$
 
 ---
 
